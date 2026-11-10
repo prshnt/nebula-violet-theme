@@ -9,6 +9,10 @@ A deep dark-purple theme for IntelliJ-based IDEs (2024.1+), with two variants:
 
 Both use the bundled **Nebula Violet** editor color scheme.
 
+| Nebula Violet | Nebula Violet Islands |
+|---|---|
+| ![Nebula Violet](screenshots/out/nebula-violet.png) | ![Nebula Violet Islands](screenshots/out/nebula-violet-islands.png) |
+
 ## Layout
 
 - `src/main/resources/themes/NebulaViolet.theme.json` holds the palette and UI keys (single source of truth)
@@ -22,7 +26,13 @@ Both use the bundled **Nebula Violet** editor color scheme.
 ./gradlew buildPlugin      # -> build/distributions/nebula-violet-theme-<version>.zip
 ./gradlew runIde           # sandbox IDE with the theme loaded
 ./gradlew verifyPlugin     # JetBrains Plugin Verifier against current + latest IDEA
+./gradlew screenshots      # re-render screenshots/out/*.png for the Marketplace listing
 ```
+
+`screenshots` runs a sandbox copy of your local IntelliJ (default `~/Applications/IntelliJ IDEA.app`,
+override with `-PscreenshotIde=...`; needs 2025.3+ for Islands) on `screenshots/demo`. A small
+helper plugin (`screenshots/helper`, sandbox-only, never published) paints the window to PNG for each
+theme and quits the IDE. This doesn't need macOS screen-recording permission.
 
 Install manually via *Settings | Plugins | ⚙ | Install Plugin from Disk…* and pick the zip.
 

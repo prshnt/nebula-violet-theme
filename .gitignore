@@ -6,3 +6,10 @@ build/
 *.iml
 *.pem
 *.crt
+
+# Demo project used by ./gradlew screenshots
+!screenshots/demo/.idea/
+!screenshots/demo/*.iml
+screenshots/demo/.idea/workspace.xml
+screenshots/demo/.idea/shelf/
+screenshots/demo/out/

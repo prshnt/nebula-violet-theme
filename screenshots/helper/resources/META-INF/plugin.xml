@@ -1,0 +1,11 @@
+<idea-plugin>
+  <id>dev.pkhanal.nebula-violet-screenshots</id>
+  <name>Nebula Violet Screenshot Helper</name>
+  <vendor>Prashant Khanal</vendor>
+  <description>Sandbox-only helper that renders Marketplace screenshots of the Nebula Violet themes.</description>
+  <depends>com.intellij.modules.platform</depends>
+
+  <applicationListeners>
+    <listener class="shot.Shooter" topic="com.intellij.ide.AppLifecycleListener"/>
+  </applicationListeners>
+</idea-plugin>

@@ -89,3 +89,55 @@ tasks.jar {
         into("META-INF")
     }
 }
+
+// --- Marketplace screenshots -------------------------------------------------------------
+// `./gradlew screenshots` launches a sandbox copy of a locally installed IDE (2025.3+ so the
+// Islands variant renders as islands) with the demo project, and writes both themes to
+// screenshots/out/. Override the IDE with -PscreenshotIde=/path/to/IDE.app.
+val screenshotIde = providers.gradleProperty("screenshotIde")
+    .orElse(System.getProperty("user.home") + "/Applications/IntelliJ IDEA.app")
+
+val compileScreenshotHelper by tasks.registering(JavaCompile::class) {
+    source = fileTree("screenshots/helper/src")
+    classpath = files(screenshotIde.map { fileTree("$it/Contents/lib") { include("*.jar") } })
+    destinationDirectory = layout.buildDirectory.dir("screenshot-helper/classes")
+    // 2026.x platform classes are Java 25 bytecode.
+    javaCompiler = javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(25) }
+    options.release = 25
+}
+
+val screenshotHelperJar by tasks.registering(Jar::class) {
+    from(compileScreenshotHelper)
+    from("screenshots/helper/resources")
+    archiveFileName = "screenshot-helper.jar"
+    destinationDirectory = layout.buildDirectory.dir("screenshot-helper")
+}
+
+val runIdeForScreenshots by intellijPlatformTesting.runIde.registering {
+    localPath = screenshotIde.map { file(it) }
+    // Copied into the sandbox's plugins dir; never part of the published theme.
+    prepareSandboxTask {
+        from(screenshotHelperJar) {
+            into("nebula-violet-screenshot-helper/lib")
+        }
+    }
+    task {
+        val demo = layout.projectDirectory.dir("screenshots/demo").asFile.absolutePath
+        val out = layout.projectDirectory.dir("screenshots/out").asFile.absolutePath
+        args(demo)
+        jvmArgs(
+            "-Dshot.out=$out",
+            "-Dshot.file=$demo/src/dev/nebula/orbit/MissionControl.java",
+            "-Dshot.line=37",
+            "-Dshot.themes=dev.pkhanal.nebula-violet=nebula-violet,dev.pkhanal.nebula-violet-islands=nebula-violet-islands",
+            "-Didea.trust.all.projects=true",
+            "-Dide.show.tips.on.startup.default.value=false",
+        )
+    }
+}
+
+tasks.register("screenshots") {
+    group = "documentation"
+    description = "Renders Marketplace screenshots of both themes into screenshots/out/."
+    dependsOn(runIdeForScreenshots)
+}
