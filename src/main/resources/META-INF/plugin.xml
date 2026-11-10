@@ -1,0 +1,36 @@
+<idea-plugin>
+  <id>dev.pkhanal.nebula-violet-theme</id>
+  <name>Nebula Violet Theme</name>
+  <vendor url="https://github.com/prshnt">Prashant Khanal</vendor>
+
+  <description><![CDATA[
+    <p>A deep dark-purple theme: near-black violet chrome, a plum editor, warm orange keywords,
+    golden functions, green strings and sky-blue members.</p>
+    <p>Two variants are included:</p>
+    <ul>
+      <li><b>Nebula Violet</b>: the classic flat layout, for the Classic UI and for anyone who
+      prefers the standard New UI look.</li>
+      <li><b>Nebula Violet Islands</b>: the same palette on the Islands layout (2025.3+), with
+      rounded tool windows and editor islands floating on a darker frame.</li>
+    </ul>
+    <p>Choose one under <i>Settings | Appearance &amp; Behavior | Appearance | Theme</i>.
+    Both come with the matching <i>Nebula Violet</i> editor color scheme.</p>
+  ]]></description>
+
+  <change-notes><![CDATA[
+    <h3>1.1.0</h3>
+    <ul>
+      <li>New <b>Nebula Violet Islands</b> variant for the Islands UI.</li>
+      <li>Plugin icon and Marketplace metadata.</li>
+    </ul>
+    <h3>1.0.0</h3>
+    <ul><li>Initial release.</li></ul>
+  ]]></change-notes>
+
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <themeProvider id="dev.pkhanal.nebula-violet" path="/themes/NebulaViolet.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-islands" path="/themes/NebulaVioletIslands.theme.json"/>
+  </extensions>
+</idea-plugin>

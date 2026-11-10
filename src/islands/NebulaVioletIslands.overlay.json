@@ -1,0 +1,41 @@
+{
+  "name": "Nebula Violet Islands",
+  "parentTheme": "ExperimentalDark",
+  "ui": {
+    "Islands": 1,
+    "Island.arc": 20,
+    "Island.arc.compact": 16,
+    "Island.borderArcLength": 14,
+    "Island.borderArcLength.compact": 10,
+    "Island.borderWidth": 6,
+    "Island.borderWidth.compact": 4,
+    "Island.borderColor": "panelAlt",
+    "Island.inactiveAlpha": 0.56,
+    "Island.toolWindowAlpha": 0.2,
+    "MainWindow.background": "chrome",
+    "MainWindow.Tab.background": "chrome",
+    "MainWindow.Tab.selectedBackground": "panelAlt",
+    "MainWindow.Tab.hoverBackground": "chromeHover",
+    "MainWindow.Tab.separatorColor": "border",
+    "MainWindow.Tab.foreground": "fgMuted",
+    "MainWindow.Tab.selectedForeground": "fg",
+    "ToolWindow.borderColor": "#00000000",
+    "ToolWindow.Header.borderColor": "panelAlt",
+    "MainToolbar.borderColor": "#00000000",
+    "StatusBar.borderColor": "#00000000",
+    "EditorTabs.underTabsBorderColor": "panel",
+    "EditorTabs.borderColor": "panel",
+    "alt": {
+      "MainWindow.background": "#0E0B14",
+      "MainToolbar.background": "#0E0B14",
+      "ToolWindow.Stripe.background": "#0E0B14",
+      "StatusBar.background": "#0E0B14",
+      "ToolWindow.background": "panel",
+      "ToolWindow.Header.inactiveBackground": "panel",
+      "Island.borderColor": "panel",
+      "Borders.color": "borderStrong",
+      "Borders.ContrastBorderColor": "borderStrong",
+      "ToolWindow.Header.borderColor": "borderStrong"
+    }
+  }
+}
