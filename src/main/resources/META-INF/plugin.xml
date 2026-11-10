@@ -18,13 +18,12 @@
   ]]></description>
 
   <change-notes><![CDATA[
-    <h3>1.1.0</h3>
-    <ul>
-      <li>New <b>Nebula Violet Islands</b> variant for the Islands UI.</li>
-      <li>Plugin icon and Marketplace metadata.</li>
-    </ul>
     <h3>1.0.0</h3>
-    <ul><li>Initial release.</li></ul>
+    <ul>
+      <li>Initial release with two variants: <b>Nebula Violet</b> (classic) and
+      <b>Nebula Violet Islands</b> (Islands UI, 2025.3+).</li>
+      <li>Matching <i>Nebula Violet</i> editor color scheme.</li>
+    </ul>
   ]]></change-notes>
 
   <depends>com.intellij.modules.platform</depends>
