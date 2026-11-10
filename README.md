@@ -29,11 +29,21 @@ Install manually via *Settings | Plugins | ⚙ | Install Plugin from Disk…* an
 ## Publishing to JetBrains Marketplace
 
 1. Bump `version` in `gradle.properties` and add a `<change-notes>` entry in `plugin.xml`.
-2. Create a signing certificate ([docs](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html)) and export:
-   `CERTIFICATE_CHAIN`, `PRIVATE_KEY`, `PRIVATE_KEY_PASSWORD`.
-3. First release: `./gradlew signPlugin`, then upload `build/distributions/*-signed.zip` at
-   <https://plugins.jetbrains.com/plugin/add>. Choose the *Themes* category, set the license URL, and add screenshots of both variants.
-4. Later releases: `PUBLISH_TOKEN=<token> ./gradlew publishPlugin`.
+2. Sign. The key and certificate live outside the repo in `~/.jetbrains-signing/` (key encrypted,
+   password in the macOS Keychain as `jetbrains-plugin-signing`). The signer can't decrypt
+   OpenSSL-encrypted keys itself, so the key is decrypted in memory only:
+
+   ```bash
+   PW="$(security find-generic-password -a "$USER" -s jetbrains-plugin-signing -w)"
+   export CERTIFICATE_CHAIN="$(cat ~/.jetbrains-signing/chain.crt)"
+   export PRIVATE_KEY="$(openssl rsa -in ~/.jetbrains-signing/private.pem -passin pass:"$PW" 2>/dev/null)"
+   ./gradlew signPlugin   # -> build/distributions/*-signed.zip
+   ```
+
+3. First release: upload `build/distributions/*-signed.zip` at <https://plugins.jetbrains.com/plugin/add>.
+   Choose the *Themes* category and add screenshots of both variants.
+4. Later releases: run the exports above plus `export PUBLISH_TOKEN=<token>` (Marketplace → My Tokens),
+   then `./gradlew publishPlugin`.
 
 ## License
 
