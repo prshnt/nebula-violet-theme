@@ -1,6 +1,11 @@
 package shot;
 
 import com.intellij.ide.AppLifecycleListener;
+import com.intellij.ide.ui.TargetUIType;
+import com.intellij.ide.ui.ThemeListProvider;
+import com.intellij.ide.ui.laf.UiThemeProviderListManager;
+import com.intellij.openapi.editor.colors.Groups;
+import com.intellij.ui.ExperimentalUI;
 import com.intellij.ide.ui.LafManager;
 import com.intellij.ide.ui.laf.UIThemeLookAndFeelInfo;
 import com.intellij.ide.projectView.ProjectView;
@@ -57,6 +62,7 @@ public final class Shooter implements AppLifecycleListener {
         try {
             Files.createDirectories(out);
             Project project = waitForProject();
+            edt(() -> dumpThemeList(out.resolve("theme-list.txt")));
             DumbService.getInstance(project).waitForSmartMode();
             edt(() -> prepare(project));
             Thread.sleep(6000);
@@ -64,6 +70,9 @@ public final class Shooter implements AppLifecycleListener {
             for (String entry : System.getProperty("shot.themes").split(",")) {
                 String[] parts = entry.split("=", 2);
                 edt(() -> applyTheme(parts[0]));
+                // Switching between Islands and classic themes rebuilds the frame.
+                waitForFrame(project);
+                edt(() -> prepare(project));
                 edt(() -> dismissNotifications(project));
                 Thread.sleep(4000);
                 edt(() -> capture(project, out.resolve(parts[1] + ".png").toFile()));
@@ -82,6 +91,26 @@ public final class Shooter implements AppLifecycleListener {
         }
     }
 
+    /** Records what Settings | Appearance | Theme offers, so a missing theme shows up in review. */
+    private static void dumpThemeList(Path target) throws Exception {
+        StringBuilder text = new StringBuilder("newUI=" + ExperimentalUI.Companion.isNewUI() + "\n");
+        for (Groups.GroupInfo<UIThemeLookAndFeelInfo> group :
+                ThemeListProvider.Companion.getInstance().getShownThemes().getInfos()) {
+            text.append("group ").append(group.getTitle()).append('\n');
+            for (UIThemeLookAndFeelInfo theme : group.getItems()) {
+                text.append("  ").append(theme.getId()).append(" | ").append(theme.getName()).append('\n');
+            }
+        }
+        UiThemeProviderListManager themes = UiThemeProviderListManager.Companion.getInstance();
+        for (TargetUIType type : TargetUIType.values()) {
+            text.append("targetUi ").append(type).append(':');
+            themes.getThemeListForTargetUI(type).iterator()
+                    .forEachRemaining(theme -> text.append(' ').append(theme.getId()));
+            text.append('\n');
+        }
+        Files.writeString(target, text);
+    }
+
     private static Project waitForProject() throws InterruptedException {
         while (true) {
             Project[] open = ProjectManager.getInstance().getOpenProjects();
@@ -89,6 +118,12 @@ public final class Shooter implements AppLifecycleListener {
                 return open[0];
             }
             Thread.sleep(500);
+        }
+    }
+
+    private static void waitForFrame(Project project) throws InterruptedException {
+        while (WindowManager.getInstance().getFrame(project) == null) {
+            Thread.sleep(250);
         }
     }
 
@@ -121,13 +156,17 @@ public final class Shooter implements AppLifecycleListener {
         lafManager.setCurrentLookAndFeel(laf, false);
         lafManager.updateUI();
 
+        // "Nebula Violet Colorblind Islands" uses the "Nebula Violet Colorblind" scheme. Match the
+        // display name: the stored name of a bundled scheme can carry an internal "_@user_" prefix.
+        String schemeName = laf.getName().replace(" Islands", "");
         EditorColorsManager colors = EditorColorsManager.getInstance();
         for (EditorColorsScheme scheme : colors.getAllSchemes()) {
-            if (scheme.getName().contains("Nebula Violet")) {
+            if (scheme.getDisplayName().equals(schemeName)) {
                 colors.setGlobalScheme(scheme);
-                break;
+                return;
             }
         }
+        throw new IllegalStateException("Editor scheme not found: " + schemeName);
     }
 
     private static void dismissNotifications(Project project) {

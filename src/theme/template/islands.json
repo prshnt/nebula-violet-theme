@@ -1,6 +1,5 @@
 {
-  "name": "Nebula Violet Islands",
-  "parentTheme": "ExperimentalDark",
+  "parentTheme": "${islandsParent}",
   "ui": {
     "Islands": 1,
     "Island.arc": 20,
@@ -26,10 +25,10 @@
     "EditorTabs.underTabsBorderColor": "panel",
     "EditorTabs.borderColor": "panel",
     "alt": {
-      "MainWindow.background": "#0E0B14",
-      "MainToolbar.background": "#0E0B14",
-      "ToolWindow.Stripe.background": "#0E0B14",
-      "StatusBar.background": "#0E0B14",
+      "MainWindow.background": "frame",
+      "MainToolbar.background": "frame",
+      "ToolWindow.Stripe.background": "frame",
+      "StatusBar.background": "frame",
       "ToolWindow.background": "panel",
       "ToolWindow.Header.inactiveBackground": "panel",
       "Island.borderColor": "panel",

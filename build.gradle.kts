@@ -1,7 +1,7 @@
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
+import themebuild.AuditPalettes
+import themebuild.GenerateThemes
 
 plugins {
     id("java")
@@ -53,36 +53,30 @@ intellijPlatform {
     }
 }
 
-// The Islands theme is the classic theme plus a small overlay, generated so the palette
-// and UI keys live in one place.
-val generateIslandsTheme by tasks.registering {
-    val base = layout.projectDirectory.file("src/main/resources/themes/NebulaViolet.theme.json")
-    val overlay = layout.projectDirectory.file("src/islands/NebulaVioletIslands.overlay.json")
-    val outDir = layout.buildDirectory.dir("generated/islands")
-    inputs.files(base, overlay)
-    outputs.dir(outDir)
-    doLast {
-        @Suppress("UNCHECKED_CAST")
-        val theme = JsonSlurper().parse(base.asFile) as MutableMap<String, Any?>
-        @Suppress("UNCHECKED_CAST")
-        val extra = JsonSlurper().parse(overlay.asFile) as Map<String, Any?>
-        extra.forEach { (key, value) ->
-            if (key == "ui") {
-                @Suppress("UNCHECKED_CAST")
-                (theme["ui"] as MutableMap<String, Any?>).putAll(value as Map<String, Any?>)
-            } else {
-                theme[key] = value
-            }
-        }
-        val target = outDir.get().file("themes/NebulaVioletIslands.theme.json").asFile
-        target.parentFile.mkdirs()
-        target.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(theme)) + "\n")
-    }
+// Every variant is a palette (src/theme/palettes/*.json) rendered through shared templates
+// (src/theme/template/) into a classic theme, an Islands theme and an editor color scheme.
+val generateThemes = tasks.register<GenerateThemes>("generateThemes") {
+    palettesDir = layout.projectDirectory.dir("src/theme/palettes")
+    templatesDir = layout.projectDirectory.dir("src/theme/template")
+    pluginXml = layout.projectDirectory.file("src/main/resources/META-INF/plugin.xml")
+    outputDir = layout.buildDirectory.dir("generated/themes")
 }
 
 sourceSets.main {
-    resources.srcDir(generateIslandsTheme)
+    resources.srcDir(generateThemes)
 }
+
+// Contrast, distinctness and color-blindness checks; see README "Palette audit".
+val auditPalettes = tasks.register<AuditPalettes>("auditPalettes") {
+    group = "verification"
+    description = "Measures every palette against src/theme/audit-rules.json."
+    palettesDir = layout.projectDirectory.dir("src/theme/palettes")
+    rules = layout.projectDirectory.file("src/theme/audit-rules.json")
+    reportDir = layout.buildDirectory.dir("reports/palette-audit")
+}
+
+tasks.check { dependsOn(auditPalettes) }
+tasks.named("buildPlugin") { dependsOn(auditPalettes) }
 
 tasks.jar {
     from(layout.projectDirectory.file("LICENSE")) {
@@ -92,7 +86,7 @@ tasks.jar {
 
 // --- Marketplace screenshots -------------------------------------------------------------
 // `./gradlew screenshots` launches a sandbox copy of a locally installed IDE (2025.3+ so the
-// Islands variant renders as islands) with the demo project, and writes both themes to
+// Islands variant renders as islands) with the demo project, and writes every theme to
 // screenshots/out/. Override the IDE with -PscreenshotIde=/path/to/IDE.app.
 val screenshotIde = providers.gradleProperty("screenshotIde")
     .orElse(System.getProperty("user.home") + "/Applications/IntelliJ IDEA.app")
@@ -129,7 +123,10 @@ val runIdeForScreenshots by intellijPlatformTesting.runIde.registering {
             "-Dshot.out=$out",
             "-Dshot.file=$demo/src/dev/nebula/orbit/MissionControl.java",
             "-Dshot.line=37",
-            "-Dshot.themes=dev.pkhanal.nebula-violet=nebula-violet,dev.pkhanal.nebula-violet-islands=nebula-violet-islands",
+            "-Dshot.themes=" + listOf(
+                "nebula-violet", "nebula-violet-colorblind", "nebula-violet-light", "nebula-violet-light-colorblind",
+                "nebula-violet-midnight", "nebula-violet-midnight-colorblind",
+            ).flatMap { listOf(it, "$it-islands") }.joinToString(",") { "dev.pkhanal.$it=$it" },
             "-Didea.trust.all.projects=true",
             "-Dide.show.tips.on.startup.default.value=false",
         )
@@ -138,6 +135,6 @@ val runIdeForScreenshots by intellijPlatformTesting.runIde.registering {
 
 tasks.register("screenshots") {
     group = "documentation"
-    description = "Renders Marketplace screenshots of both themes into screenshots/out/."
+    description = "Renders Marketplace screenshots of every theme into screenshots/out/."
     dependsOn(runIdeForScreenshots)
 }

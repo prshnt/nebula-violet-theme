@@ -1,0 +1,44 @@
+{
+  "text": {
+    "background": "panel",
+    "minWcag": 4.5,
+    "roles": [
+      "fg", "fgMuted", "punctuation", "keyword", "string", "stringEscape", "constant", "field", "parameter",
+      "functionDecl", "functionCall", "className", "attribute", "metadata", "special", "heading", "comment",
+      "docTag", "docTagValue", "vcsAnnotation", "consoleSystem", "error", "warning", "link"
+    ]
+  },
+  "subtle": {
+    "background": "panel",
+    "minApcaLc": 15,
+    "roles": ["lineNumber", "fgDisabled"]
+  },
+  "pairs": {
+    "minWcag": 4.5,
+    "pairs": [
+      ["fg", "surface"],
+      ["fg", "selection"],
+      ["fg", "editorSelection"],
+      ["fg", "caretRow"],
+      ["comment", "caretRow"],
+      ["fgMuted", "panelAlt"],
+      ["fgMuted", "chrome"],
+      ["onPrimary", "primary"],
+      ["inlay", "hint"],
+      ["matchedBraceFg", "matchedBrace"]
+    ]
+  },
+  "distinct": {
+    "minDeltaE": 10,
+    "groups": {
+      "syntax": [
+        "fg", "keyword", "string", "stringEscape", "constant", "field", "parameter", "functionDecl",
+        "functionCall", "className", "attribute", "metadata", "special", "comment"
+      ],
+      "severity": ["error", "warning", "success"],
+      "gutter": ["gutterAdded", "gutterModified", "gutterDeleted"],
+      "fileStatus": ["fileAdded", "fileModified", "fileDeleted", "fileUnknown", "fileMerged"],
+      "console": ["ansiRed", "ansiGreen", "ansiYellow", "ansiBlue", "ansiMagenta", "ansiCyan"]
+    }
+  }
+}

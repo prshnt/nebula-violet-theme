@@ -1,0 +1,29 @@
+newUI=true
+group null
+  Islands Dark | Islands Dark
+  Islands Light | Islands Light
+  Islands Darcula | Islands Darcula
+  JetBrainsHighContrastTheme | High Contrast
+group null
+  ExperimentalDark | Dark
+  ExperimentalLight | Light
+  ExperimentalLightWithLightHeader | Light with Light Header
+  Darcula | Darcula
+group Custom
+  dev.pkhanal.nebula-violet | Nebula Violet
+  dev.pkhanal.nebula-violet-colorblind | Nebula Violet Colorblind
+  dev.pkhanal.nebula-violet-colorblind-islands | Nebula Violet Colorblind Islands
+  dev.pkhanal.nebula-violet-islands | Nebula Violet Islands
+  dev.pkhanal.nebula-violet-light | Nebula Violet Light
+  dev.pkhanal.nebula-violet-light-colorblind | Nebula Violet Light Colorblind
+  dev.pkhanal.nebula-violet-light-colorblind-islands | Nebula Violet Light Colorblind Islands
+  dev.pkhanal.nebula-violet-light-islands | Nebula Violet Light Islands
+  dev.pkhanal.nebula-violet-midnight | Nebula Violet Midnight
+  dev.pkhanal.nebula-violet-midnight-colorblind | Nebula Violet Midnight Colorblind
+  dev.pkhanal.nebula-violet-midnight-colorblind-islands | Nebula Violet Midnight Colorblind Islands
+  dev.pkhanal.nebula-violet-midnight-islands | Nebula Violet Midnight Islands
+targetUi NEW: ExperimentalLight ExperimentalLightWithLightHeader ExperimentalDark
+targetUi CLASSIC: Darcula IntelliJ JetBrainsLightTheme
+targetUi NEXT:
+targetUi UNSPECIFIED: JetBrainsHighContrastTheme dev.pkhanal.nebula-violet dev.pkhanal.nebula-violet-islands dev.pkhanal.nebula-violet-colorblind dev.pkhanal.nebula-violet-colorblind-islands dev.pkhanal.nebula-violet-light dev.pkhanal.nebula-violet-light-islands dev.pkhanal.nebula-violet-light-colorblind dev.pkhanal.nebula-violet-light-colorblind-islands dev.pkhanal.nebula-violet-midnight dev.pkhanal.nebula-violet-midnight-islands dev.pkhanal.nebula-violet-midnight-colorblind dev.pkhanal.nebula-violet-midnight-colorblind-islands
+targetUi ISLANDS: Islands Dark Islands Light Islands Darcula

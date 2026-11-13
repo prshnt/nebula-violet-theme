@@ -4,20 +4,29 @@
   <vendor url="https://github.com/prshnt">Prashant Khanal</vendor>
 
   <description><![CDATA[
-    <p>A deep dark-purple theme: near-black violet chrome, a plum editor, warm orange keywords,
-    golden functions, green strings and sky-blue members.</p>
-    <p>Two variants are included:</p>
-    <ul>
-      <li><b>Nebula Violet</b>: the classic flat layout, for the Classic UI and for anyone who
-      prefers the standard New UI look.</li>
-      <li><b>Nebula Violet Islands</b>: the same palette on the Islands layout (2025.3+), with
-      rounded tool windows and editor islands floating on a darker frame.</li>
-    </ul>
-    <p>Choose one under <i>Settings | Appearance &amp; Behavior | Appearance | Theme</i>.
-    Both come with the matching <i>Nebula Violet</i> editor color scheme.</p>
+    <p>A violet theme family in three brightness levels: <b>Light</b> (lavender chrome, white
+    editor), the original deep-purple <b>Nebula Violet</b>, and <b>Midnight</b> (near-black, for low
+    light and OLED screens).</p>
+    <p>Each level comes in a standard palette and a <b>Colorblind</b> palette. The colorblind-safe
+    syntax, diff, file-status and console colors stay distinguishable with protanopia, deuteranopia
+    and tritanopia: every pair is checked in a simulation of each condition, and all text meets WCAG
+    AA contrast.</p>
+    <p>Every theme also has an <b>Islands</b> version for the Islands UI (2025.3+), with rounded tool
+    windows and editor islands on a separate frame.</p>
+    <p>Choose one under <i>Settings | Appearance &amp; Behavior | Appearance | Theme</i>. Each comes
+    with its matching editor color scheme.</p>
   ]]></description>
 
   <change-notes><![CDATA[
+    <h3>1.1.0</h3>
+    <ul>
+      <li>New <b>Light</b> and <b>Midnight</b> themes alongside the original dark Nebula Violet.</li>
+      <li>New <b>Colorblind</b> palette for all three brightness levels. Its syntax, diff, file-status
+      and console colors stay distinguishable with protanopia, deuteranopia and tritanopia.</li>
+      <li>Every theme comes in a classic and an Islands version (12 themes in total), each with a
+      matching editor color scheme.</li>
+      <li>The new themes meet WCAG AA contrast for text, including default buttons and inlay hints.</li>
+    </ul>
     <h3>1.0.0</h3>
     <ul>
       <li>Initial release with two variants: <b>Nebula Violet</b> (classic) and
@@ -31,5 +40,15 @@
   <extensions defaultExtensionNs="com.intellij">
     <themeProvider id="dev.pkhanal.nebula-violet" path="/themes/NebulaViolet.theme.json"/>
     <themeProvider id="dev.pkhanal.nebula-violet-islands" path="/themes/NebulaVioletIslands.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-colorblind" path="/themes/NebulaVioletColorblind.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-colorblind-islands" path="/themes/NebulaVioletColorblindIslands.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-light" path="/themes/NebulaVioletLight.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-light-islands" path="/themes/NebulaVioletLightIslands.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-light-colorblind" path="/themes/NebulaVioletLightColorblind.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-light-colorblind-islands" path="/themes/NebulaVioletLightColorblindIslands.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-midnight" path="/themes/NebulaVioletMidnight.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-midnight-islands" path="/themes/NebulaVioletMidnightIslands.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-midnight-colorblind" path="/themes/NebulaVioletMidnightColorblind.theme.json"/>
+    <themeProvider id="dev.pkhanal.nebula-violet-midnight-colorblind-islands" path="/themes/NebulaVioletMidnightColorblindIslands.theme.json"/>
   </extensions>
 </idea-plugin>
