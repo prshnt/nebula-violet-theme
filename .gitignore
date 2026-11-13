@@ -13,3 +13,6 @@ build/
 screenshots/demo/.idea/workspace.xml
 screenshots/demo/.idea/shelf/
 screenshots/demo/out/
+
+# macOS Finder metadata
+.DS_Store
