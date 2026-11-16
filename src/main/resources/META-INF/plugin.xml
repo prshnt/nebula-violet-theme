@@ -17,24 +17,6 @@
     with its matching editor color scheme.</p>
   ]]></description>
 
-  <change-notes><![CDATA[
-    <h3>1.1.0</h3>
-    <ul>
-      <li>New <b>Light</b> and <b>Midnight</b> themes alongside the original dark Nebula Violet.</li>
-      <li>New <b>Colorblind</b> palette for all three brightness levels. Its syntax, diff, file-status
-      and console colors stay distinguishable with protanopia, deuteranopia and tritanopia.</li>
-      <li>Every theme comes in a classic and an Islands version (12 themes in total), each with a
-      matching editor color scheme.</li>
-      <li>The new themes meet WCAG AA contrast for text, including default buttons and inlay hints.</li>
-    </ul>
-    <h3>1.0.0</h3>
-    <ul>
-      <li>Initial release with two variants: <b>Nebula Violet</b> (classic) and
-      <b>Nebula Violet Islands</b> (Islands UI, 2025.3+).</li>
-      <li>Matching <i>Nebula Violet</i> editor color scheme.</li>
-    </ul>
-  ]]></change-notes>
-
   <depends>com.intellij.modules.platform</depends>
 
   <extensions defaultExtensionNs="com.intellij">

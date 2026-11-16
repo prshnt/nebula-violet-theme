@@ -77,9 +77,12 @@ object ColorScience {
     }
 
     /** CIEDE2000 difference between two colours (about 1 = just noticeable side by side). */
-    fun deltaE2000(first: DoubleArray, second: DoubleArray): Double {
-        val (l1, a1, b1) = lab(first).toList()
-        val (l2, a2, b2) = lab(second).toList()
+    fun deltaE2000(first: DoubleArray, second: DoubleArray): Double = deltaE2000Lab(lab(first), lab(second))
+
+    /** CIEDE2000 difference between two L*a*b* colours. */
+    fun deltaE2000Lab(first: DoubleArray, second: DoubleArray): Double {
+        val (l1, a1, b1) = first.toList()
+        val (l2, a2, b2) = second.toList()
         val cBar = (hypot(a1, b1) + hypot(a2, b2)) / 2
         val g = 0.5 * (1 - sqrt(cBar.pow(7) / (cBar.pow(7) + 25.0.pow(7))))
         val a1p = (1 + g) * a1

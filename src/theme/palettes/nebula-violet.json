@@ -21,7 +21,7 @@
     "fgDisabled":   "#6B6880",
     "accent":       "#A77CF2",
     "accentDim":    "#7E5BC2",
-    "primary":      "#8E5FE8",
+    "primary":      "#8859E1",
     "onPrimary":    "#FFFFFF",
     "primaryFocus": "#C6A6FF",
     "link":         "#B99AFF",
@@ -136,7 +136,6 @@
       "deltaE:string/metadata":           "two greens",
       "deltaE:keyword/className":         "orange vs tan",
       "deltaE:functionCall/className":    "gold vs tan",
-      "contrast:onPrimary/primary":       "white text on the default button is just under AA",
       "contrast:inlay/hint":              "inlay hint text on its chip is just under AA",
       "contrast:comment/caretRow":        "comments on the caret line are just under AA"
     }

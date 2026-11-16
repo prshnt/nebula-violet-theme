@@ -1,3 +1,4 @@
+import org.jetbrains.changelog.Changelog
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.models.ProductRelease
 import themebuild.AuditPalettes
@@ -6,6 +7,7 @@ import themebuild.GenerateThemes
 plugins {
     id("java")
     id("org.jetbrains.intellij.platform")
+    id("org.jetbrains.changelog") version "2.5.0"
 }
 
 dependencies {
@@ -21,6 +23,21 @@ intellijPlatform {
 
     pluginConfiguration {
         version = project.version.toString()
+        // Every released version from CHANGELOG.md, newest first: a plain "1.1.0" heading, then
+        // its Added/Changed/Fixed groups one level below.
+        changeNotes = provider {
+            with(changelog) {
+                getAll().values
+                    .filter { it.version != unreleasedTerm.get() }
+                    .joinToString("\n") { item ->
+                        val body = renderItem(
+                            item.withHeader(false).withLinks(false).withEmptySections(false),
+                            Changelog.OutputType.HTML,
+                        )
+                        "<h3>${item.version}</h3>\n" + body.replace("<h3>", "<h4>").replace("</h3>", "</h4>")
+                    }
+            }
+        }
         ideaVersion {
             // 241 = 2024.1. The Islands variant needs 2025.3 (253) or newer to render as
             // islands; on older IDEs the extra keys are ignored and it looks like a plain
@@ -32,6 +49,8 @@ intellijPlatform {
 
     pluginVerification {
         ides {
+            // The oldest IDE `sinceBuild` allows, so the 241 floor is actually tested.
+            create(IntelliJPlatformType.IntellijIdea, "2024.1")
             current()
             latest {
                 types = listOf(IntelliJPlatformType.IntellijIdea)
@@ -51,6 +70,10 @@ intellijPlatform {
     publishing {
         token = providers.environmentVariable("PUBLISH_TOKEN")
     }
+}
+
+changelog {
+    repositoryUrl = "https://github.com/prshnt/nebula-violet-theme"
 }
 
 // Every variant is a palette (src/theme/palettes/*.json) rendered through shared templates
@@ -91,7 +114,7 @@ tasks.jar {
 val screenshotIde = providers.gradleProperty("screenshotIde")
     .orElse(System.getProperty("user.home") + "/Applications/IntelliJ IDEA.app")
 
-val compileScreenshotHelper by tasks.registering(JavaCompile::class) {
+val compileScreenshotHelper = tasks.register<JavaCompile>("compileScreenshotHelper") {
     source = fileTree("screenshots/helper/src")
     classpath = files(screenshotIde.map { fileTree("$it/Contents/lib") { include("*.jar") } })
     destinationDirectory = layout.buildDirectory.dir("screenshot-helper/classes")
@@ -100,14 +123,20 @@ val compileScreenshotHelper by tasks.registering(JavaCompile::class) {
     options.release = 25
 }
 
-val screenshotHelperJar by tasks.registering(Jar::class) {
+val screenshotHelperJar = tasks.register<Jar>("screenshotHelperJar") {
     from(compileScreenshotHelper)
     from("screenshots/helper/resources")
     archiveFileName = "screenshot-helper.jar"
     destinationDirectory = layout.buildDirectory.dir("screenshot-helper")
 }
 
-val runIdeForScreenshots by intellijPlatformTesting.runIde.registering {
+// Each palette's two themes, with the provider ids plugin.xml gives them (dev.pkhanal.<palette file>).
+val screenshotThemes = layout.projectDirectory.dir("src/theme/palettes").asFile
+    .listFiles { f -> f.extension == "json" }.orEmpty()
+    .map { it.nameWithoutExtension }.sorted()
+    .flatMap { listOf(it, "$it-islands") }
+
+val runIdeForScreenshots = intellijPlatformTesting.runIde.register("runIdeForScreenshots") {
     localPath = screenshotIde.map { file(it) }
     // Copied into the sandbox's plugins dir; never part of the published theme.
     prepareSandboxTask {
@@ -122,11 +151,10 @@ val runIdeForScreenshots by intellijPlatformTesting.runIde.registering {
         jvmArgs(
             "-Dshot.out=$out",
             "-Dshot.file=$demo/src/dev/nebula/orbit/MissionControl.java",
-            "-Dshot.line=37",
-            "-Dshot.themes=" + listOf(
-                "nebula-violet", "nebula-violet-colorblind", "nebula-violet-light", "nebula-violet-light-colorblind",
-                "nebula-violet-midnight", "nebula-violet-midnight-colorblind",
-            ).flatMap { listOf(it, "$it-islands") }.joinToString(",") { "dev.pkhanal.$it=$it" },
+            // The caret goes on the first line containing this text, so editing the demo can't
+            // silently shift the screenshot.
+            "-Dshot.caretLine=case Lander l when",
+            "-Dshot.themes=" + screenshotThemes.joinToString(",") { "dev.pkhanal.$it=$it" },
             "-Didea.trust.all.projects=true",
             "-Dide.show.tips.on.startup.default.value=false",
         )
@@ -136,5 +164,5 @@ val runIdeForScreenshots by intellijPlatformTesting.runIde.registering {
 tasks.register("screenshots") {
     group = "documentation"
     description = "Renders Marketplace screenshots of every theme into screenshots/out/."
-    dependsOn(runIdeForScreenshots)
+    dependsOn(runIdeForScreenshots.name)
 }

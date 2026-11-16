@@ -16,6 +16,7 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.fileEditor.impl.LoadTextUtil;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
@@ -140,11 +141,25 @@ public final class Shooter implements AppLifecycleListener {
         String filePath = System.getProperty("shot.file");
         VirtualFile file = LocalFileSystem.getInstance().refreshAndFindFileByPath(filePath);
         if (file != null) {
-            int line = Integer.getInteger("shot.line", 0);
+            int line = caretLine(file, System.getProperty("shot.caretLine"));
             FileEditorManager.getInstance(project)
                     .openTextEditor(new OpenFileDescriptor(project, file, line, 8), true);
             ProjectView.getInstance(project).select(null, file, false);
         }
+    }
+
+    /** The 0-based index of the first line containing {@code text}; line 0 when no text is given. */
+    private static int caretLine(VirtualFile file, String text) {
+        if (text == null) {
+            return 0;
+        }
+        String[] lines = LoadTextUtil.loadText(file).toString().split("\n", -1);
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].contains(text)) {
+                return i;
+            }
+        }
+        throw new IllegalStateException("No line containing '" + text + "' in " + file.getPath());
     }
 
     private static void applyTheme(String themeId) {
