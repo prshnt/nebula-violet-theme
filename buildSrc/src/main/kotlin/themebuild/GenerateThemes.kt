@@ -24,8 +24,8 @@ import java.io.File
  * - Anywhere else, including the whole editor scheme, `${role}` is substituted textually.
  *
  * All roles are resolved to literal colours, so the output never depends on how the IDE resolves
- * named colours. The task fails on an unknown role, on a palette role no template uses, and on a
- * generated theme that `plugin.xml` doesn't register.
+ * named colours. The task fails on an unknown role, on a palette role no template uses, on a
+ * generated theme that `plugin.xml` doesn't register, and on a registered theme no palette generates.
  */
 @CacheableTask
 abstract class GenerateThemes : DefaultTask() {
@@ -58,6 +58,7 @@ abstract class GenerateThemes : DefaultTask() {
         out.mkdirs()
 
         val problems = mutableListOf<String>()
+        val generated = mutableSetOf<String>()
         for (palette in Palette.loadAll(palettesDir.get().asFile)) {
             val used = mutableSetOf<String>()
             val base = palette.baseName
@@ -94,10 +95,16 @@ abstract class GenerateThemes : DefaultTask() {
                 problems += "${palette.file.name}: roles not used by any template: ${unused.joinToString()}"
             }
             for (path in listOf("/themes/$base.theme.json", "/themes/${base}Islands.theme.json")) {
+                generated += path
                 if ("path=\"$path\"" !in registered) {
                     problems += "plugin.xml has no <themeProvider path=\"$path\"/> for palette ${palette.file.name}"
                 }
             }
+        }
+        // The reverse: a provider left behind after a palette is removed or renamed.
+        for (match in Regex("""<themeProvider\b[^>]*\bpath="([^"]+)"""").findAll(registered)) {
+            val path = match.groupValues[1]
+            if (path !in generated) problems += "plugin.xml registers $path, but no palette generates it"
         }
         if (problems.isNotEmpty()) throw GradleException(problems.joinToString("\n"))
     }

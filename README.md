@@ -56,7 +56,8 @@ Colors live in exactly one place: a palette per variant. Everything else refers 
 
 `generateThemes` renders each palette into `<Name>.theme.json`, `<Name>Islands.theme.json` and
 `<Name>.xml`, with every role resolved to a literal color. It fails on an unknown role, on a role no
-template uses, and on a generated theme that `plugin.xml` doesn't register.
+template uses, on a generated theme that `plugin.xml` doesn't register, and on a registered theme
+no palette generates. `./gradlew screenshots` picks up every palette automatically.
 
 To add a variant, copy a palette, rename it, change colors, and add its two `<themeProvider>`
 entries to `plugin.xml`.
@@ -73,6 +74,10 @@ entries to `plugin.xml`.
 | Every pair of syntax colors | CIEDE2000 color difference | ≥ 10 |
 | The same pairs under protanopia, deuteranopia, tritanopia | Machado et al. 2009 simulation, then CIEDE2000 | measured always; enforced when the palette sets `audit.cvdMinDeltaE` |
 
+The measurements are unit-tested against published reference data (`buildSrc/src/test`): all 34
+CIEDE2000 pairs from Sharma, Wu & Dalal (2005), the APCA-W3 reference values, and the WCAG
+definition. The tests run with every build.
+
 The contrast thresholds come from the standards. The ΔE ≥ 10 bar is this project's choice: about 1
 is just noticeable for side-by-side swatches, and thin glyphs need far more to read as different
 categories at a glance.
@@ -87,7 +92,7 @@ only shrinks.
 ./gradlew buildPlugin      # -> build/distributions/nebula-violet-theme-<version>.zip
 ./gradlew auditPalettes    # contrast / distinctness report per palette
 ./gradlew runIde           # sandbox IDE with the theme loaded
-./gradlew verifyPlugin     # JetBrains Plugin Verifier against current + latest IDEA
+./gradlew verifyPlugin     # JetBrains Plugin Verifier against 2024.1, current + latest IDEA
 ./gradlew screenshots      # re-render screenshots/out/*.png for the Marketplace listing
 ```
 
@@ -100,7 +105,9 @@ Install manually via *Settings | Plugins | ⚙ | Install Plugin from Disk…* an
 
 ## Publishing to JetBrains Marketplace
 
-1. Bump `version` in `gradle.properties` and add a `<change-notes>` entry in `plugin.xml`.
+1. Add the changes under `## [Unreleased]` in `CHANGELOG.md` as you go. To release, bump `version` in
+   `gradle.properties` and run `./gradlew patchChangelog`, which moves them under the new version.
+   The build renders `CHANGELOG.md` into the plugin's change notes; don't edit them in `plugin.xml`.
 2. Sign. The key and certificate live outside the repo in `~/.jetbrains-signing/` (key encrypted,
    password in the macOS Keychain as `jetbrains-plugin-signing`). The signer can't decrypt
    OpenSSL-encrypted keys itself, so the key is decrypted in memory only:
